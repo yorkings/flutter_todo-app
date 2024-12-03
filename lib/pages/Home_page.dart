@@ -9,22 +9,42 @@ class Homepage extends StatefulWidget {
   State<Homepage> createState() => _HomepageState();
 }
 
-List lista = [
-  ["make tutorial", false]
-];
-
 class _HomepageState extends State<Homepage> {
+  List lista = [
+    ["make tutorial", false]
+  ];
+
+  final _controller = TextEditingController();
+
+  void savebutto() {
+    setState(() {
+      lista.add([_controller.text, false]);
+    });
+    Navigator.of(context).pop();
+    _controller.clear();
+  }
+
   void createNewtask() {
     showDialog(
         context: context,
         builder: (context) {
-          return Dialoguebox();
+          return Dialoguebox(
+            controller1: _controller,
+            onCancel: () => Navigator.of(context).pop(),
+            onSave: savebutto,
+          );
         });
   }
 
   void checkCheckbox(bool? value, int index) {
     setState(() {
       lista[index][1] = !lista[index][1];
+    });
+  }
+
+  void deleteTask(int index) {
+    setState(() {
+      lista.removeAt(index);
     });
   }
 
@@ -39,6 +59,7 @@ class _HomepageState extends State<Homepage> {
         floatingActionButton: FloatingActionButton(
           onPressed: createNewtask,
           child: Icon(Icons.add),
+          backgroundColor: Colors.orangeAccent,
         ),
         body: ListView.builder(
           itemCount: lista.length,
@@ -47,6 +68,7 @@ class _HomepageState extends State<Homepage> {
               taskName: lista[index][0],
               taskCompleted: lista[index][1],
               onChanged: (value) => checkCheckbox(value, index),
+              deletefunc: (context) => deleteTask(index),
             );
           },
         ));
